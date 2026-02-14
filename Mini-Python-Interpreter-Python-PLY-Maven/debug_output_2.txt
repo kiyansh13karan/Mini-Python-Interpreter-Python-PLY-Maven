@@ -1,0 +1,453 @@
+﻿Parsing code: '# Mini-Python-Interpreter Example Code\n\n# 1. Variables and Basic Types\nprint("--- 1. Variables ---")\nx = 10\ny = 20\nz = x + y\nprint(z)\n\nname = "Mini-Python"\nis_fun = True\n\nif is_fun:\n    print(name + " is fun!")\n\n# 2. String Manipulation\nprint("\\n--- 2. String Methods ---")\ngreeting = "  Hello World  "\nprint(greeting.strip())\nprint(greeting.upper())\nprint(greeting.lower())\nprint(greeting.replace("World", "Interpreter"))\n\n# 3. Control Flow\nprint("\\n--- 3. Loops ---")\n# While Loop\ni = 0\nwhile i < 3:\n    print(i)\n    i = i + 1\n\n# For Loop with Range\nprint("Counting with range:")\nfor j in range(1, 4):\n    print(j)\n\n# 4. Lists and Iteration\nprint("\\n--- 4. Lists ---")\nnumbers = [10, 20, 30, 40, 50]\nprint(numbers)\nprint("First element:", numbers[0])\nprint("Length:", len(numbers))\n\nprint("Iterating over list:")\nfor num in numbers:\n    if num > 25:\n        print(num)\n\n# 5. Functions\nprint("\\n--- 5. Functions ---")\ndef square(n):\n    return n * n\n\ndef calculate_area(width, height):\n    return width * height\n\nresult = square(5)\nprint("Square of 5:", result)\n\narea = calculate_area(10, 5)\nprint("Area of 10x5:", area)\n\n# 6. Recursion (Bonus)\ndef factorial(n):\n    if n <= 1:\n        return 1\n    else:\n        return n * factorial(n - 1)\n\nprint("Factorial of 5:", factorial(5))'
+AST Type: <class 'list'>
+AST Content (Recursive):
+[
+  Print:
+    expr: 
+      String:
+        value: --- 1. Variables ---
+  Assign:
+    name: 
+      Identifier:
+        name: x
+    expr: 
+      Number:
+        value: 10
+  Assign:
+    name: 
+      Identifier:
+        name: y
+    expr: 
+      Number:
+        value: 20
+  Assign:
+    name: 
+      Identifier:
+        name: z
+    expr: 
+      BinaryOp:
+        left: +
+        op: 
+          Identifier:
+            name: x
+        right: 
+          Identifier:
+            name: y
+  Print:
+    expr: 
+      Identifier:
+        name: z
+  Assign:
+    name: 
+      Identifier:
+        name: name
+    expr: 
+      String:
+        value: Mini-Python
+  Assign:
+    name: 
+      Identifier:
+        name: is_fun
+    expr: 
+      Boolean:
+        value: True
+  IfElse:
+    condition: 
+      Identifier:
+        name: is_fun
+    if_body: 
+      [
+        Print:
+          expr: 
+            BinaryOp:
+              left: +
+              op: 
+                Identifier:
+                  name: name
+              right: 
+                String:
+                  value:  is fun!
+        Print:
+          expr: 
+            String:
+              value: 
+--- 2. String Methods ---
+        Assign:
+          name: 
+            Identifier:
+              name: greeting
+          expr: 
+            String:
+              value:   Hello World  
+        Print:
+          expr: 
+            StringMethod:
+              expr: 
+                Identifier:
+                  name: greeting
+              method: strip
+              args: 
+                [
+                ]
+        Print:
+          expr: 
+            StringMethod:
+              expr: 
+                Identifier:
+                  name: greeting
+              method: upper
+              args: 
+                [
+                ]
+        Print:
+          expr: 
+            StringMethod:
+              expr: 
+                Identifier:
+                  name: greeting
+              method: lower
+              args: 
+                [
+                ]
+        Print:
+          expr: 
+            StringMethod:
+              expr: 
+                Identifier:
+                  name: greeting
+              method: replace
+              args: 
+                [
+                  String:
+                    value: World
+                  String:
+                    value: Interpreter
+                ]
+        Print:
+          expr: 
+            String:
+              value: 
+--- 3. Loops ---
+        Assign:
+          name: 
+            Identifier:
+              name: i
+          expr: 
+            Number:
+              value: 0
+        WhileLoop:
+          condition: 
+            BinaryOp:
+              left: <
+              op: 
+                Identifier:
+                  name: i
+              right: 
+                Number:
+                  value: 3
+          body: 
+            [
+              Print:
+                expr: 
+                  Identifier:
+                    name: i
+              Assign:
+                name: 
+                  Identifier:
+                    name: i
+                expr: 
+                  BinaryOp:
+                    left: +
+                    op: 
+                      Identifier:
+                        name: i
+                    right: 
+                      Number:
+                        value: 1
+              Print:
+                expr: 
+                  String:
+                    value: Counting with range:
+              ForLoop:
+                var: 
+                  Identifier:
+                    name: j
+                iterable: 
+                  RangeCall:
+                    start: 
+                      Number:
+                        value: 1
+                    stop: 
+                      Number:
+                        value: 4
+                    step: 
+                      None (Type: <class 'NoneType'>)
+                body: 
+                  [
+                    Print:
+                      expr: 
+                        Identifier:
+                          name: j
+                    Print:
+                      expr: 
+                        String:
+                          value: 
+--- 4. Lists ---
+                    Assign:
+                      name: 
+                        Identifier:
+                          name: numbers
+                      expr: 
+                        ListNode:
+                          elements: 
+                            [
+                              Number:
+                                value: 10
+                              Number:
+                                value: 20
+                              Number:
+                                value: 30
+                              Number:
+                                value: 40
+                              Number:
+                                value: 50
+                            ]
+                    Print:
+                      expr: 
+                        Identifier:
+                          name: numbers
+                    Print:
+                      expr: 
+                        ListNode:
+                          elements: 
+                            [
+                              String:
+                                value: First element:
+                              IndexNode:
+                                expr: 
+                                  Identifier:
+                                    name: numbers
+                                index: 
+                                  Number:
+                                    value: 0
+                            ]
+                    Print:
+                      expr: 
+                        ListNode:
+                          elements: 
+                            [
+                              String:
+                                value: Length:
+                              LenFunction:
+                                expr: 
+                                  Identifier:
+                                    name: numbers
+                            ]
+                    Print:
+                      expr: 
+                        String:
+                          value: Iterating over list:
+                    ForLoop:
+                      var: 
+                        Identifier:
+                          name: num
+                      iterable: 
+                        Identifier:
+                          name: numbers
+                      body: 
+                        [
+                          IfElse:
+                            condition: 
+                              BinaryOp:
+                                left: >
+                                op: 
+                                  Identifier:
+                                    name: num
+                                right: 
+                                  Number:
+                                    value: 25
+                            if_body: 
+                              [
+                                Print:
+                                  expr: 
+                                    Identifier:
+                                      name: num
+                                Print:
+                                  expr: 
+                                    String:
+                                      value: 
+--- 5. Functions ---
+                                FunctionDef:
+                                  name: square
+                                  params: 
+                                    [
+                                      Identifier:
+                                        name: n
+                                    ]
+                                  body: 
+                                    [
+                                      Return:
+                                        expr: 
+                                          BinaryOp:
+                                            left: *
+                                            op: 
+                                              Identifier:
+                                                name: n
+                                            right: 
+                                              Identifier:
+                                                name: n
+                                      FunctionDef:
+                                        name: calculate_area
+                                        params: 
+                                          [
+                                            Identifier:
+                                              name: width
+                                            Identifier:
+                                              name: height
+                                          ]
+                                        body: 
+                                          [
+                                            Return:
+                                              expr: 
+                                                BinaryOp:
+                                                  left: *
+                                                  op: 
+                                                    Identifier:
+                                                      name: width
+                                                  right: 
+                                                    Identifier:
+                                                      name: height
+                                            Assign:
+                                              name: 
+                                                Identifier:
+                                                  name: result
+                                              expr: 
+                                                FunctionCall:
+                                                  name: 
+                                                    Identifier:
+                                                      name: square
+                                                  args: 
+                                                    [
+                                                      Number:
+                                                        value: 5
+                                                    ]
+                                            Print:
+                                              expr: 
+                                                ListNode:
+                                                  elements: 
+                                                    [
+                                                      String:
+                                                        value: Square of 5:
+                                                      Identifier:
+                                                        name: result
+                                                    ]
+                                            Assign:
+                                              name: 
+                                                Identifier:
+                                                  name: area
+                                              expr: 
+                                                FunctionCall:
+                                                  name: 
+                                                    Identifier:
+                                                      name: calculate_area
+                                                  args: 
+                                                    [
+                                                      Number:
+                                                        value: 10
+                                                      Number:
+                                                        value: 5
+                                                    ]
+                                            Print:
+                                              expr: 
+                                                ListNode:
+                                                  elements: 
+                                                    [
+                                                      String:
+                                                        value: Area of 10x5:
+                                                      Identifier:
+                                                        name: area
+                                                    ]
+                                            FunctionDef:
+                                              name: factorial
+                                              params: 
+                                                [
+                                                  Identifier:
+                                                    name: n
+                                                ]
+                                              body: 
+                                                [
+                                                  IfElse:
+                                                    condition: 
+                                                      BinaryOp:
+                                                        left: <=
+                                                        op: 
+                                                          Identifier:
+                                                            name: n
+                                                        right: 
+                                                          Number:
+                                                            value: 1
+                                                    if_body: 
+                                                      [
+                                                        Return:
+                                                          expr: 
+                                                            Number:
+                                                              value: 1
+                                                      ]
+                                                    else_body: 
+                                                      [
+                                                        Return:
+                                                          expr: 
+                                                            BinaryOp:
+                                                              left: *
+                                                              op: 
+                                                                Identifier:
+                                                                  name: n
+                                                              right: 
+                                                                FunctionCall:
+                                                                  name: 
+                                                                    Identifier:
+                                                                      name: factorial
+                                                                  args: 
+                                                                    [
+                                                                      BinaryOp:
+                                                                        left: -
+                                                                        op: 
+                                                                          Identifier:
+                                                                            name: n
+                                                                        right: 
+                                                                          Number:
+                                                                            value: 1
+                                                                    ]
+                                                        Print:
+                                                          expr: 
+                                                            ListNode:
+                                                              elements: 
+                                                                [
+                                                                  String:
+                                                                    value: Factorial of 5:
+                                                                  FunctionCall:
+                                                                    name: 
+                                                                      Identifier:
+                                                                        name: factorial
+                                                                    args: 
+                                                                      [
+                                                                        Number:
+                                                                          value: 5
+                                                                      ]
+                                                                ]
+                                                      ]
+                                                ]
+                                          ]
+                                    ]
+                              ]
+                            else_body: 
+                              [
+                              ]
+                        ]
+                  ]
+            ]
+      ]
+    else_body: 
+      [
+      ]
+]

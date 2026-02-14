@@ -1,0 +1,5 @@
+ply==3.11
+black==23.12.1
+pytest==7.4.3
+streamlit
+graphviz 
