@@ -1,4 +1,4 @@
-from interpreter import Interpreter
+from src.interpreter import Interpreter
 
 code = """
 x = 10

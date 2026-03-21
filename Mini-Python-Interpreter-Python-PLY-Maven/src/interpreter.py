@@ -21,7 +21,12 @@ class Interpreter:
     def evaluate(self, node):
         """Evaluate an AST node."""
         if isinstance(node, list):
-            return [self.evaluate(item) for item in node]
+            result = None
+            for item in node:
+                result = self.evaluate(item)
+                if self.return_value is not None or self.break_loop or self.continue_loop:
+                    break
+            return result
         if node is None:
             return None
         method_name = f'evaluate_{node.__class__.__name__}'
@@ -172,13 +177,24 @@ class Interpreter:
         func = self.functions[func_name]
         if not isinstance(func, FunctionDef):
             raise Exception(f"{func_name} is not a function")
+        args = [self.evaluate(arg) for arg in node.args]
+        
         old_env = self.environment.copy()
         self.environment = {}
-        args = [self.evaluate(arg) for arg in node.args]
+        
         for param, arg in zip(func.params, args):
             param_name = param.name if hasattr(param, 'name') else param
             self.environment[param_name] = arg
-        result = self.evaluate(func.body)
+            
+        # Store old return value to support nested calls
+        old_return = self.return_value
+        self.return_value = None
+        
+        self.evaluate(func.body)
+        
+        result = self.return_value
+        self.return_value = old_return
+        
         self.environment = old_env
         return result
 

@@ -44,7 +44,9 @@ tokens = (
     'PRINT',
     'LEN',
     'RANGE',
-    'NEWLINE'
+    'NEWLINE',
+    'INDENT',
+    'DEDENT'
 )
 
 # Regular expression rules for simple tokens
@@ -95,7 +97,7 @@ reserved = {
 indent_stack = [0]
 
 def t_NEWLINE(t):
-    r'\n+'
+    r'\n+[ \t]*'
     t.lexer.lineno += t.value.count('\n')
     return t
 
@@ -139,8 +141,92 @@ def t_error(t):
     # Instead of raising an error, we'll skip the character and continue
     t.lexer.skip(1)
 
-# Build the lexer
-lexer = lex.lex()
+# Build the inner lexer
+outer_lexer = lex.lex()
+
+class IndentLexer(object):
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.token_queue = []
+        self.indent_stack = [0]
+        self.lineno = 1
+
+    def input(self, text):
+        self.lexer.input(text)
+        self.token_queue = []
+        self.indent_stack = [0]
+        self.lineno = 1
+
+    def token(self):
+        if self.token_queue:
+            return self.token_queue.pop(0)
+
+        tok = self.lexer.token()
+        
+        if not tok:
+            # EOF: yield DEDENTs
+            while len(self.indent_stack) > 1:
+                self.indent_stack.pop()
+                dtok = lex.LexToken()
+                dtok.type = 'DEDENT'
+                dtok.value = ''
+                dtok.lineno = self.lineno
+                dtok.lexpos = self.lexer.lexpos
+                self.token_queue.append(dtok)
+            if self.token_queue:
+                return self.token_queue.pop(0)
+            return None
+
+        self.lineno = tok.lineno
+
+        if tok.type == 'NEWLINE':
+            # Count the trailing spaces/tabs in the NEWLINE token to compute indentation
+            text = tok.value
+            last_newline = text.rfind('\n')
+            indent_str = text[last_newline+1:]
+            
+            # For simplicity, treat tabs as 4 spaces
+            indent_level = 0
+            for char in indent_str:
+                if char == ' ':
+                    indent_level += 1
+                elif char == '\t':
+                    indent_level += 4
+            
+            self.token_queue.append(tok) # Yield NEWLINE first
+
+            if indent_level > self.indent_stack[-1]:
+                self.indent_stack.append(indent_level)
+                itok = lex.LexToken()
+                itok.type = 'INDENT'
+                itok.value = indent_str
+                itok.lineno = tok.lineno
+                itok.lexpos = tok.lexpos
+                self.token_queue.append(itok)
+            elif indent_level < self.indent_stack[-1]:
+                while len(self.indent_stack) > 1 and indent_level < self.indent_stack[-1]:
+                    self.indent_stack.pop()
+                    dtok = lex.LexToken()
+                    dtok.type = 'DEDENT'
+                    dtok.value = ''
+                    dtok.lineno = tok.lineno
+                    dtok.lexpos = tok.lexpos
+                    self.token_queue.append(dtok)
+                if indent_level != self.indent_stack[-1]:
+                    # Exception should be raised for IndentationError
+                    print(f"IndentationError at line {tok.lineno}")
+                    
+            return self.token_queue.pop(0)
+
+        # Skip leading spaces on the VERY FIRST line
+        if tok.lexpos == 0 and tok.type not in ('NEWLINE',):
+            # This is hard to do here without modifying how characters are matched
+            pass
+
+        return tok
+
+# The main lexer used by parser
+lexer = IndentLexer(outer_lexer)
 
 def tokenize(code):
     """Tokenize the input code and return a list of tokens with their details."""

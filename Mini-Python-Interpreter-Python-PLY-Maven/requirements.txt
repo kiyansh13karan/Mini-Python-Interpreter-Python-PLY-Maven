@@ -3,3 +3,5 @@ black==23.12.1
 pytest==7.4.3
 streamlit
 graphviz 
+
+# PS K:\PROJECTS\Mini-Python-Interpreter\Mini-Python-Interpreter-Python-PLY-Maven> python -m streamlit run app.py

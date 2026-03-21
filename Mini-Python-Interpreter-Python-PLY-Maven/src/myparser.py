@@ -31,6 +31,7 @@ def p_statements(p):
 def p_statement_code(p):
     '''statement : print_stmt
                 | assign_stmt
+                | expr_stmt
                 | if_stmt
                 | while_stmt
                 | for_stmt
@@ -49,14 +50,16 @@ def p_print_stmt(p):
     '''print_stmt : PRINT LPAREN expr_list RPAREN
                  | PRINT expr'''
     if len(p) == 5:
-        # Handle multiple arguments in print
         if len(p[3]) == 1:
             p[0] = Print(p[3][0])
         else:
-            # Create a list node for multiple arguments
             p[0] = Print(ListNode(p[3]))
     else:
         p[0] = Print(p[2])
+
+def p_expr_stmt(p):
+    '''expr_stmt : expr'''
+    p[0] = p[1]
 
 def p_assign_stmt(p):
     '''assign_stmt : IDENTIFIER EQUALS expr
@@ -67,23 +70,23 @@ def p_assign_stmt(p):
         p[0] = ListAssign(Identifier(p[1]), p[3], p[6])
 
 def p_if_stmt(p):
-    '''if_stmt : IF expr COLON statements
-               | IF expr COLON statements ELSE COLON statements'''
-    if len(p) == 5:
-        p[0] = IfElse(p[2], p[4], [])
+    '''if_stmt : IF expr COLON NEWLINE INDENT statements DEDENT
+               | IF expr COLON NEWLINE INDENT statements DEDENT ELSE COLON NEWLINE INDENT statements DEDENT'''
+    if len(p) == 8:
+        p[0] = IfElse(p[2], p[6], [])
     else:
-        p[0] = IfElse(p[2], p[4], p[7])
+        p[0] = IfElse(p[2], p[6], p[12])
 
 def p_while_stmt(p):
-    '''while_stmt : WHILE expr COLON statements'''
-    p[0] = WhileLoop(p[2], p[4])
+    '''while_stmt : WHILE expr COLON NEWLINE INDENT statements DEDENT'''
+    p[0] = WhileLoop(p[2], p[6])
 
 def p_for_stmt(p):
-    '''for_stmt : FOR IDENTIFIER IN expr COLON statements'''
-    p[0] = ForLoop(Identifier(p[2]), p[4], p[6])
+    '''for_stmt : FOR IDENTIFIER IN expr COLON NEWLINE INDENT statements DEDENT'''
+    p[0] = ForLoop(Identifier(p[2]), p[4], p[8])
 
 def p_function_def(p):
-    '''function_def : DEF IDENTIFIER LPAREN param_list RPAREN COLON statements'''
+    '''function_def : DEF IDENTIFIER LPAREN param_list RPAREN COLON NEWLINE INDENT statements DEDENT'''
     # Create identifiers for parameters if they're not already
     params = []
     for param in p[4]:
@@ -91,7 +94,7 @@ def p_function_def(p):
             params.append(param)
         else:
             params.append(Identifier(param))
-    p[0] = FunctionDef(p[2], params, p[7])
+    p[0] = FunctionDef(p[2], params, p[9])
 
 def p_param_list(p):
     '''param_list : IDENTIFIER
@@ -124,8 +127,8 @@ def p_continue_stmt(p):
     p[0] = Continue()
 
 def p_try_except_stmt(p):
-    '''try_except_stmt : TRY COLON statements EXCEPT COLON statements'''
-    p[0] = TryExcept(p[3], p[6])
+    '''try_except_stmt : TRY COLON NEWLINE INDENT statements DEDENT EXCEPT COLON NEWLINE INDENT statements DEDENT'''
+    p[0] = TryExcept(p[5], p[11])
 
 def p_expr(p):
     '''expr : term
@@ -232,18 +235,7 @@ def p_range_call(p):
     else:
         p[0] = RangeCall(None, None, None)
 
-def p_expression_funccall(p):
-    'expression : IDENTIFIER LPAREN arg_list RPAREN'
-    p[0] = FunctionCall(p[1], p[3])
 
-def p_arg_list(p):
-    '''arg_list : expression
-                | arg_list COMMA expression
-                | empty'''
-    if len(p) == 2:
-        p[0] = [p[1]] if p[1] is not None else []
-    else:
-        p[0] = p[1] + [p[3]]
 
 def p_empty(p):
     'empty :'
@@ -304,4 +296,11 @@ def p_error(p):
         raise SyntaxError("Unexpected end of file. Check for unclosed blocks or missing statements")
 
 # Build the parser
-parser = yacc.yacc()
+_parser = yacc.yacc()
+
+class CustomParser:
+    def parse(self, code, lexer=None, **kwargs):
+        from .lexer import lexer as custom_lexer
+        return _parser.parse(code, lexer=lexer or custom_lexer, **kwargs)
+
+parser = CustomParser()
