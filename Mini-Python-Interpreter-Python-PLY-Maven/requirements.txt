@@ -2,6 +2,7 @@ ply==3.11
 black==23.12.1
 pytest==7.4.3
 streamlit
-graphviz 
+graphviz
 
 # PS K:\PROJECTS\Mini-Python-Interpreter\Mini-Python-Interpreter-Python-PLY-Maven> python -m streamlit run app.py
+# .\.venv2\Scripts\activate

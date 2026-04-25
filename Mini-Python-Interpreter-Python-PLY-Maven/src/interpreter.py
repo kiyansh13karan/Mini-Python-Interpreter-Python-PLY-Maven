@@ -256,12 +256,24 @@ class Interpreter:
         else:
             raise Exception(f"Unknown string method: {node.method}")
 
+    # def evaluate_RangeCall(self, node):
+    #     start = self.evaluate(node.start) if node.start is not None else 0
+    #     stop = self.evaluate(node.stop) if node.stop is not None else None
+    #     step = self.evaluate(node.step) if node.step is not None else 1
+    #     if not all(isinstance(x, int) for x in [start, stop, step] if x is not None):
+    #         raise Exception("Range arguments must be integers")
+    #     return range(start, stop, step)
+
     def evaluate_RangeCall(self, node):
-        start = self.evaluate(node.start) if node.start is not None else 0
-        stop = self.evaluate(node.stop) if node.stop is not None else None
+        if node.stop is None:
+            stop = self.evaluate(node.start)
+            start = 0
+        else:
+            start = self.evaluate(node.start) if node.start is not None else 0
+            stop = self.evaluate(node.stop)
+
         step = self.evaluate(node.step) if node.step is not None else 1
-        if not all(isinstance(x, int) for x in [start, stop, step] if x is not None):
-            raise Exception("Range arguments must be integers")
+
         return range(start, stop, step)
 
     def interpret(self, statements):
